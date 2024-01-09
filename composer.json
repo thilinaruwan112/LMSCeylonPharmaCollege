@@ -1,0 +1,16 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "^6.8",
+        "twbs/bootstrap": "5.3.2",
+        "axllent/jquery": "^3.7",
+        "mpdf/mpdf": "^8.2",
+        "tymon/jwt-auth": "^1.0",
+        "firebase/php-jwt": "^6.0",
+        "mike42/escpos-php": "^2.2"
+    },
+    "config": {
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
+    }
+}

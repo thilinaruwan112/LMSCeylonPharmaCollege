@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "dropify": "^0.2.2",
+    "sweetalert2": "^11.10.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "LMS - Ceylon Pharma College",
+    "short_name": "Ceylon Pharma College",
+    "description": "#1 Pharmacy Course in Sri Lanka",
+    "start_url": "https://web.pharmacollege.lk/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#333",
+    "icons": [{
+        "src": "./assets/images/squre-logo.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    }]
+}
