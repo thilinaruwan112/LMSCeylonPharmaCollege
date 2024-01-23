@@ -81,6 +81,7 @@ body {
 
 .game-icon {
     width: 50%;
+    border-radius: 18px;
     margin-top: -40%;
 }
 

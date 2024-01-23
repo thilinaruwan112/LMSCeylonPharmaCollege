@@ -3,6 +3,8 @@ require_once '../../include/configuration.php';
 include '../../php_handler/function_handler.php';
 include '../../php_handler/course_functions.php';
 include '../../php_handler/win-pharma-functions.php';
+include '../../lib/quiz/php_method/quiz_methods.php';
+include '../../lib/d-pad/php_methods/d-pad-methods.php';
 
 $loggedUser = $_POST['LoggedUser'];
 $courseCode = $_POST['defaultCourseCode'];
@@ -136,8 +138,8 @@ if ($courseCode != null) {
         </div>
     </div>
     <div class="col-6 col-md-4 mb-2 d-flex">
-        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('https://lms.pharmacollege.lk/modules/quiz/')">
-            <div class="card-body">
+        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('quiz')">
+            <div class="card-body text-center">
                 <div class="row">
                     <div class="col-12">
                         <img src="./lib/home/assets/images/question.gif" class="game-icon">
@@ -145,7 +147,12 @@ if ($courseCode != null) {
                     </div>
 
                     <div class="col-12 mt-2">
-                        <?php $ProgressValue = 0; ?>
+                        <?php
+                        $ProgressValue = number_format(GetOverallGrade($loggedUser, $courseCode));
+                        if ($ProgressValue < 0) {
+                            $ProgressValue = 0;
+                        }
+                        ?>
                         <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?= $ProgressValue ?>" aria-valuemin="0" aria-valuemax="100">
                             <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= $ProgressValue ?>%</div>
                         </div>
@@ -157,7 +164,7 @@ if ($courseCode != null) {
 
     <div class="col-6 col-md-4 mb-2 d-flex">
         <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('course')">
-            <div class="card-body">
+            <div class="card-body text-center">
                 <div class="row">
                     <div class="col-12">
                         <img src="./lib/home/assets/images/passed.gif" class="game-icon">
@@ -193,9 +200,9 @@ if ($courseCode != null) {
 
                     <div class="col-12 mt-2">
                         <?php $ProgressValue = $winPharmaPercentage; ?>
-                        <p class="m-0"><?= $ProgressValue ?>%</p>
+                        <p class="m-0"><?= number_format($ProgressValue) ?>%</p>
                         <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?= $ProgressValue ?>" aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= $ProgressValue ?>%</div>
+                            <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= number_format($ProgressValue, 2) ?>%</div>
                         </div>
                     </div>
                 </div>
@@ -204,7 +211,7 @@ if ($courseCode != null) {
     </div>
 
     <div class="col-6 col-md-4 mb-2 d-flex">
-        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('pharma-hunter')">
+        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('d-pad')">
             <div class="card-body text-center">
                 <div class="row">
                     <div class="col-12">
@@ -213,7 +220,10 @@ if ($courseCode != null) {
                     </div>
 
                     <div class="col-12 mt-2">
-                        <?php $ProgressValue = 0; ?>
+                        <?php
+
+                        $overallGradeDpad =  OverallGradeDpad($loggedUser)['overallGrade'];
+                        $ProgressValue = number_format($overallGradeDpad); ?>
                         <p class="m-0"><?= $ProgressValue ?>%</p>
                         <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?= $ProgressValue ?>" aria-valuemin="0" aria-valuemax="100">
                             <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= $ProgressValue ?>%</div>
@@ -232,7 +242,7 @@ if ($courseCode != null) {
                 $CoursePatientsCount = count(GetCoursePatients($link, $courseCode));
 
                 if ($CoursePatientsCount != 0) {
-                    $ProgressValue = number_format(($RecoveredPatientsCount / $CoursePatientsCount) * 100, 2);
+                    $ProgressValue = number_format(($RecoveredPatientsCount / $CoursePatientsCount) * 100);
                 } else {
                     $ProgressValue = 0;
                 }

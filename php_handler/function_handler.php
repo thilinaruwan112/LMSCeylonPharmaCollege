@@ -398,6 +398,8 @@ function saveOrUpdateAnswer($link, $presID, $coverID, $name, $drugName, $drugTyp
 }
 
 
+
+
 function GenerateAnswerID($link)
 {
     $ArrayResult = 0;
@@ -1012,4 +1014,83 @@ function formatPhoneNumber($phoneNumber)
     }
 
     return $formattedNumber;
+}
+
+
+// Dpad
+
+function GenerateDpadAnswerID($link)
+{
+    $ArrayResult = 0;
+    $sql = "SELECT COUNT(`id`) AS `entry_count` FROM `prescription_answer`";
+
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult = $row['entry_count'];
+        }
+    }
+    $answer_id =  $ArrayResult + 1;
+    return "ANS" . $answer_id;
+}
+
+
+function saveOrUpdateAnswerDPad($link, $presID, $coverID, $name, $drugName, $drugType, $drugQty, $morningQty, $afternoonQty, $eveningQty, $nightQty, $mealType, $usingType, $atATime, $hourQty, $additionalDescription, $createdBy, $date)
+{
+    $ArrayResult = array();
+    $currentTime = date('Y-m-d H:i:s'); // Current date and time
+    $answer_id = GenerateDpadAnswerID($link);
+    // Check if a record already exists for the given pres_id and cover_id
+    $checkStmt = $link->prepare("SELECT id FROM prescription_answer WHERE pres_id= ? AND cover_id= ?");
+    $checkStmt->bind_param("ss", $presID, $coverID);
+    $checkStmt->execute();
+    $checkStmt->store_result();
+
+    if ($checkStmt->num_rows > 0) {
+        $sql = "UPDATE prescription_answer SET `answer_id` = ?, `name`=?, drug_name=?, drug_type=?, drug_qty=?, morning_qty=?, afternoon_qty=?, evening_qty=?, night_qty=?, meal_type=?, using_type=?, at_a_time=?, hour_qty=?, additional_description=?, created_at=?, created_by=?,  `date` = ? WHERE pres_id=? AND cover_id=?";
+
+        if ($stmt_sql = mysqli_prepare($link, $sql)) {
+
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmt_sql, "sssssssssssssssssss", $answer_id, $name, $drugName, $drugType, $drugQty, $morningQty, $afternoonQty, $eveningQty, $nightQty, $mealType, $usingType, $atATime, $hourQty, $additionalDescription, $currentTime, $createdBy, $date, $presID, $coverID);
+
+
+            // Attempt to execute the prepared statement
+            if (mysqli_stmt_execute($stmt_sql)) {
+                $ArrayResult = array('status' => 'success', 'message' => 'Envelope updated successfully');
+            } else {
+                $ArrayResult = array('status' => 'error', 'message' => 'Something went wrong. Please try again later. ' . $link->error);
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmt_sql);
+        } else {
+            $ArrayResult = array('status' => 'error', 'message' => 'Something went wrong. Please try again later. ' . $link->error);
+        }
+    } else {
+
+        $sql = "INSERT INTO prescription_answer (`answer_id`, pres_id, cover_id, `date`, `name`, drug_name, drug_type, drug_qty, morning_qty, afternoon_qty, evening_qty, night_qty, meal_type, using_type, at_a_time, hour_qty, additional_description, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        if ($stmt_sql = mysqli_prepare($link, $sql)) {
+
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmt_sql, "sssssssssssssssssss", $answer_id, $presID, $coverID, $date, $name, $drugName, $drugType, $drugQty, $morningQty, $afternoonQty, $eveningQty, $nightQty, $mealType, $usingType, $atATime, $hourQty, $additionalDescription, $currentTime, $createdBy);
+
+
+            // Attempt to execute the prepared statement
+            if (mysqli_stmt_execute($stmt_sql)) {
+                $ArrayResult = array('status' => 'success', 'message' => 'Envelope Saved successfully');
+            } else {
+                $ArrayResult = array('status' => 'error', 'message' => 'Something went wrong. Please try again later. ' . $link->error);
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmt_sql);
+        } else {
+            $ArrayResult = array('status' => 'error', 'message' => 'Something went wrong. Please try again later. ' . $link->error);
+        }
+    }
+
+    // Convert the array to JSON and echo it
+    return json_encode($ArrayResult);
 }

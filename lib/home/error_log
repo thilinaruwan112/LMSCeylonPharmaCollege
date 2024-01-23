@@ -1,0 +1,82 @@
+[10-Jan-2024 22:14:29 Asia/Colombo] PHP Fatal error:  Uncaught Error: Call to undefined function GetLmsStudentsByUserName() in /home/pharmaco/web.pharmacollege.lk/php_handler/course_functions.php:67
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/course_functions.php(102): getStudentPaymentDetails('PA15259')
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/index.php(21): GetStudentBalance('PA15259')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/course_functions.php on line 67
+[13-Jan-2024 06:11:36 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[13-Jan-2024 06:14:40 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[13-Jan-2024 06:29:30 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[13-Jan-2024 06:31:41 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[13-Jan-2024 06:36:30 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 10:42:44 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 10:44:05 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 10:47:46 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 10:51:01 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC11' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC11', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 10:53:10 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 10:57:19 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 11:02:35 Asia/Colombo] PHP Fatal error:  Uncaught mysqli_sql_exception: Duplicate entry 'PA091148-Course-CPCC12' for key 'index_number' in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php:848
+Stack trace:
+#0 /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php(848): mysqli_stmt_execute(Object(mysqli_stmt))
+#1 /home/pharmaco/web.pharmacollege.lk/lib/home/save-default-course.php(11): SaveDefaultValues('PA091148', 'CPCC12', 'Course')
+#2 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/php_handler/function_handler.php on line 848
+[15-Jan-2024 16:44:01 Asia/Colombo] PHP Fatal error:  Uncaught Error: Call to undefined function OverallGradeDpad() in /home/pharmaco/web.pharmacollege.lk/lib/home/index.php:225
+Stack trace:
+#0 {main}
+  thrown in /home/pharmaco/web.pharmacollege.lk/lib/home/index.php on line 225

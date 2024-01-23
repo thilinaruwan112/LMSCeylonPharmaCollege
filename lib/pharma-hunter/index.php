@@ -1,113 +1,156 @@
 <?php
 require_once '../../include/configuration.php';
 include '../../php_handler/function_handler.php';
-include '../../php_handler/pharma_hunter_functions.php';
+include '../../php_handler/course_functions.php';
+include './php_method/pharma_hunter_functions.php';
 
-$UserLevel = $_POST['UserLevel'];
+
+$userLevel = $_POST['UserLevel'];
 $loggedUser = $_POST['LoggedUser'];
-$CourseCode = $_POST['CourseCode'];
-$prescriptionList = GetPrescriptions();
+$courseCode = $_POST['defaultCourseCode']; // Course will be taken as Batch
+
+// Payments
+$studentBalanceArray = GetStudentBalance($loggedUser);
+$studentBalance = $studentBalanceArray['studentBalance'];
+
+$overallQuizGrade = 0;
+
 ?>
+<div class="row mt-2 mb-5">
+    <div class="col-12">
+        <div class="card border-0 rounded-bottom-4 rounded-top-3" id="bubbleCard">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <button onclick="redirectToURL('./')" type="button" class="btn btn-light back-button">
+                            <i class="fa-solid fa-arrow-left-long"></i>
+                        </button>
+                    </div>
 
-<style>
-    .admin-card:hover {
-        background-color: #000;
-        color: #fff !important;
-    }
+                    <div class="col-6">
+                        <div class="profile-image profile-image-mini" style="background-image : url('./assets/images/user.png')"></div>
+                    </div>
 
-    .admin-card:hover h4 {
-        color: #fff !important;
-    }
 
-    .game-card:hover {
-        background-color: #000;
-        color: #fff !important;
-    }
-
-    .game-card:hover h4 {
-        color: #fff !important;
-    }
-</style>
-
-<div class="site-title">
-    <?php $UserDetails =  GetUserDetails($link, $loggedUser); ?>
-    <div class="row">
-        <div class="col-8">
-            <h2 class="greet-text">Hi <?= $UserDetails['first_name'] ?> <?= $UserDetails['last_name'] ?></h2>
-            <p class="text-secondary">Let's Make this day Productive</p>
-        </div>
-        <div class="col-4 text-center">
-            <div class="profile-image" style="background-image : url('./assets/images/user.png')"></div>
-        </div>
-    </div>
-</div>
-
-<div id="index-content">
-    <div class="row g-3">
-        <?php if ($UserLevel != "Student") { ?>
-            <div class="col-12">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12">
-                                <h4 class="section-topic mt-0">Admin Panel</h4>
+                    <div class="col-12 text-center">
+                        <div class="grade-value-container">
+                            <div class="grade-value-overlay-1">
+                                <div class="grade-value-overlay-2">
+                                    <div class="grade-value"><?= $overallQuizGrade ?></div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <div class="col-6 col-md-4 mb-2 d-flex">
-                                <div class="card admin-card border-0 rounded-4 shadow-sm flex-fill clickable" onclick="AddAnswers(0)">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <i class="fa-brands fa-3x fa-wirsindhandwerk"></i>
-                                                <h5 class="card-title mb-0">Answers</h5>
-                                            </div>
+        <div class="card quiz-card border-0">
+            <div class="card-body">
+                <div class="quiz-img-box">
+                    <img src="./lib/home/assets/images/question.gif" class="quiz-img rounded-4">
+                </div>
+                <h1 class="card-title text-center mt-2 fw-bold bg-light p-3 rounded-5 mb-0">Quiz</h1>
+
+                <?php if ($userLevel != "Student") { ?>
+                    <div class="border-top mt-3"></div>
+                    <h3 class="card-title mt-3 fw-bold rounded-4 mb-1">Admin Panel</h3>
+                    <div class="row g-3">
+                        <div class="col-6 col-md-4 col-xl-4 d-flex">
+                            <button onclick="SetupQuiz()" class="btn btn-purple w-100 p-3 flex-fill" type="button">
+                                <i class="fa-solid fa-list-check fa-2x"></i>
+                                <h5 class="mb-0 mt-1">Setup</h5>
+                            </button>
+                        </div>
+
+                        <div class="col-6 col-md-4 col-xl-4 d-flex">
+                            <button onclick="AddTopics()" class="btn btn-dark w-100 p-3 flex-fill" type="button">
+                                <i class="fa-solid fa-plus fa-2x"></i>
+                                <h5 class="mb-0 mt-1">Topics</h5>
+                            </button>
+                        </div>
+
+                        <div class="col-6 col-md-4 col-xl-4 d-flex">
+                            <button onclick="OpenSetting()" class="btn btn-primary w-100 p-3 flex-fill" type="button">
+                                <i class="fa-solid fa-sliders fa-2x"></i>
+                                <h5 class="mb-0 mt-1">Setting</h5>
+                            </button>
+                        </div>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+
+        <div class="row g-2 mt-4">
+            <div class="col-12">
+                <h5 class="border-bottom mb-2 pb-1 fw-bold">Available Quizzes</h5>
+            </div>
+
+            <?php
+
+            if (!empty($quizTopicsByCourse)) {
+                foreach ($quizTopicsByCourse as $selectedArray) {
+                    $quizId = $selectedArray['topicID'];
+
+                    if ($selectedArray['active_status'] == 'Deleted') {
+                        continue;
+                    }
+
+                    $selectedTopic = $topicList[$quizId];
+                    $quizGrade =  GetGradeByQuiz($quizId, $loggedUser);
+                    $totalAttempts = $quizGrade['correctAttemptCount'] + $quizGrade['inCorrectAttemptCount'];
+
+                    $openStatus = ($totalAttempts > 0) ? 'Opened' : 'Not Open';
+                    $openStatusBadgeColor = ($totalAttempts > 0) ? 'success' : 'primary';
+
+                    if ($quizGrade['quizGrade'] == 100) {
+                        $openStatus = "Completed";
+                        $openStatusBadgeColor = "dark";
+                    }
+            ?>
+                    <div class="col-12 col-md-6 col-xxl-4">
+                        <div class="card border-0 shadow clickable topic-quiz-card" onclick="OpenQuiz('<?= $quizId ?>')">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <h6 class="mb-1 fw-bold"><?= $selectedTopic['topicName'] ?></h6>
+                                        <p class="mb-0 text-secondary">Attempt : <span class="badge bg-<?= $openStatusBadgeColor ?>"><?= $openStatus ?></span></p>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="bg-warning p-3 text-dark rounded-2 text-center grade-quiz fw-bold">
+                                            <?= $quizGrade['quizGrade']; ?>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
-                </div>
-
-            </div>
-
-        <?php } ?>
-        <div class="col-12">
-            <h4 class="section-topic">Let's Read Prescriptions</h4>
+            <?php
+                }
+            }
+            ?>
         </div>
 
-        <?php
-        if (!empty($prescriptionList)) {
-            $loopCount = 0; // Initialize the loop count.
-
-            foreach ($prescriptionList as $selectedArray) {
-                // Reset the loop count to 0 after every 10 iterations.
-                if ($loopCount == 10) {
-                    $loopCount = 0;
-                }
-
-                $loopCount++; // Increment the loop count.
-                $bgColor = "primary";
-
-                // if ($UserLevel == "Student") {
-                //     continue;
-                // }
-        ?>
-                <div class="col-6 col-md-4 d-flex">
-                    <div class="card clickable border-0 admin-card shadow-sm flex-fill text-center" onclick="OpenPrescription('<?= $selectedArray['prescription_id'] ?>', '<?= $loopCount ?>')">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-12">
-                                    <h4 class="card-title mb-0"><?= $selectedArray['prescription_name'] ?></h4>
-                                    <!-- <div class="badge badge-primary bg-<?= $bgColor ?>">Success</div> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        <?php
-            }
-        }
-        ?>
     </div>
 </div>
+
+<!-- Script to add random bubbles -->
+<script>
+    var card = document.getElementById("bubbleCard");
+    var positionPoints = [
+        ['20%', '60%', '60px'],
+        ['50%', '0%', '40px'],
+        ['-10%', '20%', '100px'],
+        ['80%', '65%', '50px'],
+        ['75%', '30%', '90px'],
+        ['10%', '65%', '15px']
+    ];
+
+    for (let i = 0; i < positionPoints.length; i++) {
+        xPos = positionPoints[i][0];
+        yPos = positionPoints[i][1];
+        widthVal = positionPoints[i][2];
+        createBubble(card, xPos, yPos, widthVal);
+    }
+</script>

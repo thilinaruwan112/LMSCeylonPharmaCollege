@@ -19,7 +19,10 @@ $id = $answer_id = $pres_id = $cover_id = $date = $name = $drug_name = $drug_typ
 if ($UserLevel != "Student") {
     $SubmissionArray = $correctAnswer;
 } else {
-    $SubmissionArray = CeylonPharmacySubmittedAnswersByCover($link, $loggedUser, $coverID, $prescriptionID, "Correct");
+    $SubmissionArraySubmit = CeylonPharmacySubmittedAnswersByCover($link, $loggedUser, $coverID, $prescriptionID, "Correct");
+    if (!empty($SubmissionArraySubmit)) {
+        $SubmissionArray = $correctAnswer;
+    }
 }
 if (!empty($SubmissionArray)) {
     $SubmissionArray = $SubmissionArray[0];
