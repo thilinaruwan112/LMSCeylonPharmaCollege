@@ -516,7 +516,7 @@ function SetPaymentValue($link, $prescriptionID, $paymentValue)
     $checkStmt->execute();
     $checkStmt->store_result();
 
-    if ($checkStmt->num_rows > 0) {
+    if ($checkStmt->num_rows <= 0) {
         $query = "INSERT INTO `care_payment` (`value`, `PresCode`) VALUES (?, ?)";
     } else {
         $query = "UPDATE `care_payment` SET `value` = ? WHERE `PresCode` LIKE ?";

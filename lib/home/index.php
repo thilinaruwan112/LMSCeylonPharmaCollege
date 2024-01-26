@@ -265,7 +265,7 @@ if ($courseCode != null) {
     </div>
 
     <div class="col-6 col-md-4 mb-2 d-flex">
-        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('https://lms.pharmacollege.lk/modules/pharma-hunter/')">
+        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('pharma-hunter')">
             <div class="card-body text-center">
                 <div class="row">
                     <div class="col-12">

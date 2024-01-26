@@ -5,6 +5,11 @@
     border-radius: 20px;
 }
 
+.product-card:hover {
+    background-color: #f7eded;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
 .timer-content {
     display: flex;
     align-items: center;

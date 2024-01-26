@@ -5,6 +5,7 @@ include '../php_methods/d-pad-methods.php';
 
 
 $posProducts = GetPOSProductDetailsAll();
+$lmsProducts = GetLinkedProducts();
 $prescriptionId = $prescriptionName = $prescriptionStatus = $createdAt = $createdBy = $presName = $presDate = $presAge = $presMethod = $doctorName = $notes = '';
 
 $prescriptionId = $_POST['prescriptionID'];
@@ -56,20 +57,27 @@ if ($prescriptionId != '0') {
 
                 <div class="col-md-6">
                     <div class="row g-2">
-                        <div class="col-10">
+                        <div class="col-7">
                             <p class="text-secondary mb-0">Drugs</p>
                             <select class="form-control p-2 w form-select" name="drugName" id="drugName">
                                 <option value="">Select Medicine</option>
                                 <?php
-                                if (!empty($posProducts)) {
-                                    foreach ($posProducts as $selectedItem) {
+                                if (!empty($lmsProducts)) {
+                                    foreach ($lmsProducts as $selectedArray) {
+                                        $selectedItem = $posProducts[$selectedArray['pos_id']];
                                 ?>
                                         <option value="<?= $selectedItem['ProductName'] ?>"><?= $selectedItem['ProductName'] ?></option>
                                 <?php
                                     }
                                 }
-
                                 ?>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <p class="text-secondary mb-0">Method</p>
+                            <select class="form-control p-2 form-select" name="usingMethod" id="usingMethod">
+                                <option value="bd">bd</option>
+                                <option value="tds">tds</option>
                             </select>
                         </div>
                         <div class="col-2">
@@ -144,6 +152,7 @@ if ($prescriptionId != '0') {
     $("#addDrugBtn").click(function() {
         // Get the entered drug name
         var drugName = $("#drugName").val().trim();
+        var usingMethod = $("#usingMethod").val().trim();
 
         // Check if the input is not empty
         if (drugName !== '') {
@@ -151,7 +160,7 @@ if ($prescriptionId != '0') {
             var newItem = '<div class="medicine-item bg-light p-2 rounded-3 mb-2">' +
                 '<div class="row">' +
                 '<div class="col-10">' +
-                '<h5 class="mb-0">' + drugName + '</h5>' +
+                '<h5 class="mb-0">' + drugName + ' ' + usingMethod + '</h5>' +
                 '</div>' +
                 '<div class="col-2 text-end">' +
                 '<i onclick="removeItem(this)" class="clickable text-danger fa-solid fa-trash"></i>' +

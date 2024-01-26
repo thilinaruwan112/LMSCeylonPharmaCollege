@@ -320,28 +320,14 @@ function generateHumanDetails()
 
 function generateMedicinePrescription()
 {
-    $medicines = [
-        'Paracetamol', 'Ibuprofen', 'Aspirin', 'Loratadine', 'Cetirizine', 'Diphenhydramine', 'Vitamin C', 'Vitamin D', 'Calcium Supplement',
-        'Omega-3 Fatty Acids', 'Magnesium', 'Probiotics', 'Acetaminophen', 'Ranitidine', 'Omeprazole', 'Simethicone', 'Lansoprazole',
-        'Metoprolol', 'Lisinopril', 'Losartan', 'Atorvastatin', 'Levothyroxine', 'Fluoxetine', 'Sertraline', 'Olanzapine', 'Duloxetine',
-        'Citalopram', 'Escitalopram', 'Melatonin', 'Zolpidem', 'Metformin', 'Insulin', 'Acyclovir', 'Amoxicillin', 'Ciprofloxacin',
-        'Doxycycline', 'Isoniazid', 'Rifampin', 'Azithromycin', 'Prednisone', 'Celecoxib', 'Naproxen', 'Acyclovir', 'Clarithromycin',
-        'Levofloxacin', 'Fluticasone', 'Budesonide', 'Albuterol', 'Montelukast', 'Hydrochlorothiazide', 'Furosemide'
-    ];
-
-    $medicines = GetPOSProducts();
-
+    $randomAge = rand(1, 80);
+    $posProducts = GetPOSProducts();
+    $medicineDetails = GetLinkedProducts();
+    $medicines = GetLinkedProductsItem();
 
     $dosages = ['1 tablet', '2 tablets', '1 capsule', '1 teaspoon', '1 tablespoon', '1 injection', '1 puff', '1 suppository', '1 drop'];
 
     $methods = ['2D', '3D', '5D', '1W', '1M'];
-
-    $doctors = [
-        'Dr. Sunil Rathnayaka', 'Dr. Malith Pernando', 'Dr. Ruwan Malik', 'Dr. Dilshan Jayawardena', 'Dr. Prasanna Dissanayake',
-        'Dr. Ayuru Amarle', 'Dr. Manoj Manthri', 'Dr. Isham Ishanka', 'Dr. Tharindu Fernando', 'Dr. Nadeesha Perera',
-        'Dr. Chathuranga Silva', 'Dr. Kasun Bandara', 'Dr. Udara Gunawardena', 'Dr. Asanka Wickramasinghe', 'Dr. Saman Weerasinghe',
-        'Dr. Shalika Seneviratne', 'Dr. Nimal Karunaratne', 'Dr. Lakmal Fonseka', 'Dr. Chandana Wijewardena', 'Dr. Jayantha Samarasinghe'
-    ];
 
     $harmfulCombinations = [
         ['Paracetamol', 'Ibuprofen'],
@@ -361,9 +347,15 @@ function generateMedicinePrescription()
     for ($i = 0; $i < $numberOfMedicines; $i++) {
         do {
             $randomMedicine = $medicines[array_rand($medicines)];
+
+            $selectedMedicine = $medicineDetails[$randomMedicine];
+
+            $methodListString = $selectedMedicine["method_list"];
+            $avaliableMethods = explode(', ', $methodListString);
         } while (in_array($randomMedicine, $selectedMedicines));
 
         $randomDosage = $dosages[array_rand($dosages)];
+        $randomMethod = $avaliableMethods[array_rand($avaliableMethods)];
 
         // Check for harmful combinations
         foreach ($harmfulCombinations as $harmfulCombination) {
@@ -376,6 +368,7 @@ function generateMedicinePrescription()
         $prescribedMedicines[] = [
             'Medicine' => $randomMedicine,
             'Dosage' => $randomDosage,
+            'randomMethod' => $randomMethod,
         ];
 
         $selectedMedicines[] = $randomMedicine;
@@ -389,7 +382,7 @@ function generateMedicinePrescription()
     $medicinePrescription = [
         'PrescriptionName' => $randomPrescriptionName,
         'PrescriptionDate' => $randomDate,
-        'PatientAge' => rand(1, 80), // Adjust as needed
+        'PatientAge' => $randomAge, // Adjust as needed
         'randomPrescriptionSex' => $randomPrescriptionSex,
         'PrescriptionMethod' => $randomMethod,
         'Doctor' => $randomDoctor,
@@ -651,4 +644,109 @@ function deletePrescriptionAnswerSubmissions($entryId)
         $result = ['status' => 'error', 'message' => 'Something went wrong. Please try again later. ' . $e->getMessage()];
         return json_encode($result);
     }
+}
+
+
+// 
+
+function GetLinkedProducts()
+{
+    global $link;
+    $ArrayResult = array();
+
+    // Get Default Course
+    $sql = "SELECT * FROM `linked_products`";
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult[$row['pos_id']] = $row;
+        }
+    }
+
+    return $ArrayResult;
+}
+
+function GetLinkedProductsItem()
+{
+    global $link;
+    $ArrayResult = array();
+
+    // Get Default Course
+    $sql = "SELECT * FROM `linked_products`";
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult[$row['pos_id']] = $row['pos_id'];
+        }
+    }
+
+    return $ArrayResult;
+}
+
+function SaveProductLInk($data)
+{
+    global $link;
+    $linkedProducts = GetLinkedProducts();
+    $currentTime = date("Y-m-d H:i");
+
+    // Sanitize data to prevent SQL injection
+    foreach ($data as $key => $value) {
+        if ($key != "methodList" && $key != 'ageList' && $key != 'instructionList') {
+            $data[$key] = $link->real_escape_string($value);
+        }
+    }
+
+    $methodList = json_decode($data["methodList"], true); // Decoding JSON string to array
+    $ageList = json_decode($data["ageList"], true); // Decoding JSON string to array
+    $instructionList = json_decode($data["instructionList"], true); // Decoding JSON string to array
+
+    $methodListArray = implode(', ', $methodList);
+    $ageListArray = implode(', ', $ageList);
+    $instructionListArray = implode(', ', $instructionList);
+
+    // Check if the record already exists based on 'id'
+    if (isset($linkedProducts[$data['posProductId']])) {
+        // Update the record
+        $updateQuery = "UPDATE `linked_products` SET
+                        `pos_id` = '{$data['posProductId']}',
+                        `product_name` = '{$data['productName']}',
+                        `method_list` = '{$methodListArray}',
+                        `instruction_list` = '{$instructionListArray}',
+                        `age_groups` = '{$ageListArray}',
+                        `created_by` = '{$data['LoggedUser']}',
+                        `update_time` = '{$currentTime}',
+                        `is_active` = '{$data['isActive']}'
+                        WHERE `pos_id` = '{$data['posProductId']}'";
+
+        $result = $link->query($updateQuery);
+
+        if ($result) {
+            echo json_encode(['status' => 'success', 'message' => 'Product updated successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Error updating record: ' . $link->error]);
+        }
+    } else {
+        // Insert a new record
+        $insertQuery = "INSERT INTO `linked_products` (`pos_id`, `product_name`, `method_list`, `instruction_list`, `age_groups`, `created_by`, `update_time`, `is_active` )
+                        VALUES (
+                            '{$data['posProductId']}',
+                            '{$data['productName']}',
+                            '{$methodListArray}',
+                            '{$instructionListArray}',
+                            '{$ageListArray}',
+                            '{$data['LoggedUser']}',
+                            '{$currentTime}',
+                            '{$data['isActive']}'
+                        )";
+
+        $result = $link->query($insertQuery);
+
+        if ($result) {
+            echo json_encode(['status' => 'success', 'message' => 'Product Saved successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Error inserting record: ' . $link->error]);
+        }
+    }
+
+    $link->close();
 }
