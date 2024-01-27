@@ -86,7 +86,7 @@ $savedStatus = 0
                     <h3 class="card-title mt-3 fw-bold rounded-4 mb-2">Admin Panel</h3>
                     <div class="row g-3">
                         <div class="col-12 col-md-3 col-xl-3 d-flex">
-                            <button onclick="GeneratePrescription()" class="btn btn-purple w-100 p-3 flex-fill" type="button">
+                            <button onclick="alert('Coming Soon.....')" class="btn btn-purple w-100 p-3 flex-fill" type="button">
                                 <i class="fa-solid fa-wand-magic-sparkles fa-2x"></i>
                                 <h5 class="mb-0 mt-2">Generate</h5>
                             </button>
@@ -95,7 +95,7 @@ $savedStatus = 0
                         <div class="col-12 col-md-3 col-xl-3 d-flex">
                             <button onclick="NewPrescription()" class="btn btn-dark w-100 p-3 flex-fill" type="button">
                                 <i class="fa-solid fa-plus fa-2x"></i>
-                                <h5 class="mb-0 mt-2">Prescriptions</h5>
+                                <h5 class="mb-0 mt-2">Medicine</h5>
                             </button>
                         </div>
 
@@ -103,31 +103,6 @@ $savedStatus = 0
                             <button onclick=" OpenControlPanel()" class="btn btn-primary w-100 p-3 flex-fill" type="button">
                                 <i class="fa-solid fa-sliders fa-2x"></i>
                                 <h5 class="mb-0 mt-2">Setting</h5>
-                            </button>
-                        </div>
-
-                        <div class="col-12 col-md-3 col-xl-3 d-flex">
-                            <button onclick="OpenSetting()" class="btn btn-success w-100 p-3 flex-fill" type="button">
-                                <i class="fa-solid fa-file fa-2x"></i>
-                                <h5 class="mb-0 mt-2">Results</h5>
-                            </button>
-                        </div>
-                        <div class="col-12 col-md-3 col-xl-3 d-flex">
-                            <button onclick="OpenSubmissionSetting()" class="btn btn-danger w-100 p-3 flex-fill" type="button">
-                                <i class="fa-solid fa-user-xmark fa-2x"></i>
-                                <h5 class="mb-0 mt-2">Submissions</h5>
-                            </button>
-                        </div>
-                        <div class="col-12 col-md-3 col-xl-3 d-flex">
-                            <button onclick="OpenPosProductPage()" class="btn btn-secondary w-100 p-3 flex-fill" type="button">
-                                <i class="fa-solid fa-pills fa-2x"></i>
-                                <h5 class="mb-0 mt-2">Products</h5>
-                            </button>
-                        </div>
-                        <div class="col-12 col-md-3 col-xl-3 d-flex">
-                            <button onclick="" class="btn btn-info text-white w-100 p-3 flex-fill" type="button">
-                                <i class="fa-solid fa-stethoscope fa-2x"></i>
-                                <h5 class="mb-0 mt-2">Counselling</h5>
                             </button>
                         </div>
 
@@ -181,35 +156,45 @@ $savedStatus = 0
                                 ?>
 
                                 <div class="row g-4">
+                                    <form id="store-form" action="#" method="post">
 
-                                    <div class="col-12">
-                                        <h5 class="border-bottom pb-2 fw-bold">Select storing Details</h5>
-                                    </div>
+                                        <div class="col-12">
+                                            <h5 class="border-bottom pb-2 fw-bold">Select storing Details</h5>
+                                        </div>
 
-                                    <div class="col-md-6">
-                                        <p class="mb-0 text-secondary">Select Rack</p>
-                                        <input required readonly type="text" name="rackId" id="rackId" class="w-100 btn btn-light" value="">
-                                    </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-0 text-secondary">Select Rack</p>
+                                            <input onclick="fillDataValue('racks')" required readonly type="text" name="racks" id="racks" class="w-100 btn btn-light  p-3" value="">
+                                        </div>
 
-                                    <div class="col-md-6">
-                                        <p class="mb-0 text-secondary">Select Dosage Form</p>
-                                        <input required readonly type="text" name="dosageForm" id="dosageForm" class="w-100 btn btn-light" value="">
-                                    </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-0 text-secondary">Select Dosage Form</p>
+                                            <input onclick="fillDataValue('dosageForm')" required readonly type="text" name="dosageForm" id="dosageForm" class="w-100 btn btn-light p-3" value="">
+                                        </div>
 
-                                    <div class="col-md-6">
-                                        <p class="mb-0 text-secondary">Select Drug Group</p>
-                                        <input required readonly type="text" name="drugGroup" id="drugGroup" class="w-100 btn btn-light" value="">
-                                    </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-0 text-secondary">Select Drug Group</p>
+                                            <input onclick="fillDataValue('drugGroup')" required readonly type="text" name="drugGroup" id="drugGroup" class="w-100 btn btn-light p-3" value="">
+                                        </div>
 
-                                    <div class="col-md-6">
-                                        <p class="mb-0 text-secondary">Select Category</p>
-                                        <input required readonly type="text" name="drugCategory" id="drugCategory" class="w-100 btn btn-light" value="">
-                                    </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-0 text-secondary">Select Category</p>
+                                            <input onclick="fillDataValue('drugCategory')" required readonly type="text" name="drugCategory" id="drugCategory" class="w-100 btn btn-light p-3" value="">
+                                        </div>
 
-                                    <div class="col-12 text-end mt-3">
-                                        <button type="button" class="btn btn-dark"><i class="fa-solid fa-boxes-packing"></i> Save Changes</button>
-                                    </div>
+                                        <div class="col-12">
 
+                                            <div class="row g-2 g-md-4">
+                                                <div class="col-md-6">
+                                                    <button type="button" class="btn btn-success w-100 bgn-lg p-3"><i class="fa-solid fa-forward"></i> Skip</button>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <button onclick="ValidateAnswer('<?= $medicineId ?>', '<?= $CourseCode ?>')" type="button" class="btn btn-dark  w-100 bgn-lg p-3"><i class="fa-solid fa-boxes-packing"></i> Store Drug</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
 
 
