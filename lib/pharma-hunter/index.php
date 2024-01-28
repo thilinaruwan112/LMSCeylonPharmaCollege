@@ -1,27 +1,65 @@
 <?php
+
 require_once '../../include/configuration.php';
 include '../../php_handler/function_handler.php';
 include './php_methods/pharma-hunter-methods.php';
 
 $userLevel = $_POST['UserLevel'];
-$loggedUser = $_POST['LoggedUser'];
+$LoggedUser = $_POST['LoggedUser'];
 $CourseCode = $_POST['CourseCode'];
-$medicineItems = [
-    1 => ['id' => 1, 'medicineName' => "Paracetamol 200mg", 'filePath' => "Panadol-Tablets.jpg"],
-    2 => ['id' => 2, 'medicineName' => "Paracetamol 500mg", 'filePath' => "image1.png"]
-];
-$overallGrade = 23.5;
 
-$selectedArray = $medicineItems[1];
+$timeOfDay = getCurrentTimeOfDay();
+
+$SettingValue = GetHunterProAttempts($link);
+$SetAnswerLoopCount = $SettingValue;
+$CountAnswer = $SettingValue;
+
+$AttemptCount = 1;
+if (isset($_POST['AttemptCount'])) {
+    $AttemptCount = $_POST['AttemptCount'];
+}
+
+$Submissions = GetSubmissions($link, $CountAnswer, $LoggedUser);
+$Medicines = GetHunterCourseMedicines($link, $CourseCode);
+
+$UniqueMedicines = array_diff($Medicines, $Submissions);
+$UniqueMedicines = array_values($UniqueMedicines);
+$length = count($UniqueMedicines);
+if (isset($_POST['MedicineID'])) {
+    $MedicineID = $_POST['MedicineID'];
+
+    if (in_array($MedicineID, $UniqueMedicines)) {
+        if ($length > 0) {
+            $selectedArray = GetMedicineByID($link, $MedicineID)[0];
+        }
+    }
+} else {
+    if ($length > 0) {
+        $randomNumber = rand(0, $length - 1);
+        $MedicineID = $UniqueMedicines[$randomNumber];
+        $selectedArray = GetMedicineByID($link, $MedicineID)[0];
+    }
+}
+
+
+
+$AttemptCount = 5;
+$Score = 60;
+$MedicineCount = count($Medicines);
+
+$AttemptRate = $AttemptCount / $CountAnswer;
+if ($AttemptRate > $MedicineCount) {
+    $AttemptRate = $MedicineCount;
+}
+$CompleteRate = ($MedicineCount > 0) ? ($AttemptRate / $MedicineCount) * 100 : 0;
+
+$TotalScore = $AttemptCount * $CountAnswer * 4; //4 Selections 10 for each
+$overallGrade = ($TotalScore > 0) ? ($Score / $TotalScore) * 100 : 0;
+
+
 $medicineId = $selectedArray['id'];
-$medicineName = $selectedArray['medicineName'];
-$filePath = $selectedArray['filePath'];
-
-$storingGrade = rand(50, 100);
-$totalScore = 50;
-$totalCorrectScore = 50;
-
-$savedStatus = 0
+$medicineName = $selectedArray['medicine_name'];
+$filePath = $selectedArray['file_path'];
 ?>
 
 <style>
@@ -61,13 +99,22 @@ $savedStatus = 0
 
 
                     <div class="col-12 text-center">
+                        <div class="p-2 text-light mt-3 fw-bold rounded-4 mb-3">Success Rate vs Complete Rate</div>
                         <div class="grade-value-container">
-                            <div class="grade-value-overlay-1">
+                            <div class="grade-value-overlay-1 mx-2">
                                 <div class="grade-value-overlay-2">
                                     <input type="hidden" id="gradeValue" value="<?= $overallGrade ?>">
                                     <div class="grade-value" id="counter"><?= number_format($overallGrade, 1) ?></div>
                                 </div>
                             </div>
+
+                            <div class="grade-value-overlay-1 mx-2">
+                                <div class="grade-value-overlay-2">
+                                    <input type="hidden" id="gradeValue2" value="<?= $CompleteRate ?>">
+                                    <div class="grade-value" id="counter2"><?= number_format($CompleteRate, 1) ?></div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -119,89 +166,100 @@ $savedStatus = 0
 
         <div class="row g-3 mt-4">
             <div class="col-12">
-                <h5 class="border-bottom mb-2 pb-1 fw-bold">Available</h5>
-            </div>
-            <div class="col-12">
-                <div class="card rounded-4 border-0 shadow">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 col-md-6 col-xl-6">
-                                <img class="w-100 rounded-2" src="./lib/pharma-hunter/assets/images/uploads/<?= $filePath ?>" alt="<?= $medicineName ?>">
-                            </div>
-                            <div class="col-12 col-md-6 col-xl-6">
-                                <?php
-                                if ($savedStatus == 1) {
-                                ?>
-                                    <div class="row g-2 mt-4">
-                                        <div class="col-12">
-                                            <h4 class="card-title my-4 border-bottom pb-2 fw-bold"><?= $medicineName ?></h4>
-                                        </div>
-                                        <div class="col-3">
-                                            <span class="w-100 badge btn-purple py-3"><?= $totalScore ?>/<?= $totalCorrectScore ?></span>
-                                        </div>
-                                        <div class="col-9">
-                                            <?php
-                                            if ($storingGrade < 0) {
-                                                $storingGrade = 0;
-                                            }
-                                            $ProgressValue = number_format($storingGrade); ?>
-                                            <p class="m-0"><?= $ProgressValue ?>%</p>
-                                            <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?= $ProgressValue ?>" aria-valuemin="0" aria-valuemax="100">
-                                                <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= $ProgressValue ?>%</div>
+                <?php
+                if (!empty($selectedArray)) {
+                ?>
+                    <div class="card rounded-4 border-0 shadow">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-md-6 col-xl-6">
+                                    <img class="w-100 rounded-2" src="./lib/pharma-hunter/assets/images/hunter-pro/<?= $filePath ?>" alt="<?= $medicineName ?>">
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-6">
+                                    <?php
+                                    if ($savedStatus == 1) {
+                                    ?>
+                                        <div class="row g-2 mt-4">
+                                            <div class="col-12">
+                                                <h4 class="card-title my-4 border-bottom pb-2 fw-bold"><?= $medicineName ?></h4>
+                                            </div>
+                                            <div class="col-3">
+                                                <span class="w-100 badge btn-purple py-3"><?= $totalScore ?>/<?= $totalCorrectScore ?></span>
+                                            </div>
+                                            <div class="col-9">
+                                                <?php
+                                                if ($storingGrade < 0) {
+                                                    $storingGrade = 0;
+                                                }
+                                                $ProgressValue = number_format($storingGrade); ?>
+                                                <p class="m-0"><?= $ProgressValue ?>%</p>
+                                                <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?= $ProgressValue ?>" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= $ProgressValue ?>%</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php
-                                }
-                                ?>
+                                    <?php
+                                    }
+                                    ?>
 
-                                <div class="row g-4">
                                     <form id="store-form" action="#" method="post">
 
-                                        <div class="col-12">
-                                            <h5 class="border-bottom pb-2 fw-bold">Select storing Details</h5>
-                                        </div>
+                                        <div class="row g-4">
+                                            <div class="col-12">
+                                                <h5 class="border-bottom pb-2 fw-bold">Select storing Details</h5>
+                                            </div>
 
-                                        <div class="col-md-6">
-                                            <p class="mb-0 text-secondary">Select Rack</p>
-                                            <input onclick="fillDataValue('racks')" required readonly type="text" name="racks" id="racks" class="w-100 btn btn-light  p-3" value="">
-                                        </div>
+                                            <div class="col-md-6">
+                                                <p class="mb-0 text-secondary">Select Rack</p>
+                                                <input onclick="fillDataValue('racks')" required readonly type="text" name="racks" id="racks" class="w-100 btn btn-light  p-3" value="">
+                                                <input type="hidden" id="racksId" name="racksId">
+                                            </div>
 
-                                        <div class="col-md-6">
-                                            <p class="mb-0 text-secondary">Select Dosage Form</p>
-                                            <input onclick="fillDataValue('dosageForm')" required readonly type="text" name="dosageForm" id="dosageForm" class="w-100 btn btn-light p-3" value="">
-                                        </div>
+                                            <div class="col-md-6">
+                                                <p class="mb-0 text-secondary">Select Dosage Form</p>
+                                                <input onclick="fillDataValue('dosageForm')" required readonly type="text" name="dosageForm" id="dosageForm" class="w-100 btn btn-light p-3" value="">
+                                                <input type="hidden" id="dosageFormId" name="dosageFormId">
+                                            </div>
 
-                                        <div class="col-md-6">
-                                            <p class="mb-0 text-secondary">Select Drug Group</p>
-                                            <input onclick="fillDataValue('drugGroup')" required readonly type="text" name="drugGroup" id="drugGroup" class="w-100 btn btn-light p-3" value="">
-                                        </div>
+                                            <div class="col-md-6">
+                                                <p class="mb-0 text-secondary">Select Drug Group</p>
+                                                <input onclick="fillDataValue('drugGroup')" required readonly type="text" name="drugGroup" id="drugGroup" class="w-100 btn btn-light p-3" value="">
+                                                <input type="hidden" id="drugGroupId" name="drugGroupId">
+                                            </div>
 
-                                        <div class="col-md-6">
-                                            <p class="mb-0 text-secondary">Select Category</p>
-                                            <input onclick="fillDataValue('drugCategory')" required readonly type="text" name="drugCategory" id="drugCategory" class="w-100 btn btn-light p-3" value="">
-                                        </div>
+                                            <div class="col-md-6">
+                                                <p class="mb-0 text-secondary">Select Category</p>
+                                                <input onclick="fillDataValue('drugCategory')" required readonly type="text" name="drugCategory" id="drugCategory" class="w-100 btn btn-light p-3" value="">
+                                                <input type="hidden" id="drugCategoryId" name="drugCategoryId">
+                                            </div>
 
-                                        <div class="col-12">
+                                            <div class="col-12">
 
-                                            <div class="row g-2 g-md-4">
-                                                <div class="col-md-6">
-                                                    <button type="button" class="btn btn-success w-100 bgn-lg p-3"><i class="fa-solid fa-forward"></i> Skip</button>
-                                                </div>
+                                                <div class="row g-2 g-md-4">
+                                                    <div class="col-md-6">
+                                                        <button onclick="OpenIndex()" type="button" class="btn btn-success w-100 bgn-lg p-3"><i class="fa-solid fa-forward"></i> Skip</button>
+                                                    </div>
 
-                                                <div class="col-md-6">
-                                                    <button onclick="ValidateAnswer('<?= $medicineId ?>', '<?= $CourseCode ?>')" type="button" class="btn btn-dark  w-100 bgn-lg p-3"><i class="fa-solid fa-boxes-packing"></i> Store Drug</button>
+                                                    <div class="col-md-6">
+                                                        <button onclick="ValidateAnswer('<?= $medicineId ?>', '<?= $CourseCode ?>')" type="button" class="btn btn-dark  w-100 bgn-lg p-3"><i class="fa-solid fa-boxes-packing"></i> Store Drug</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+
+
                                     </form>
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
-                </div>
+                <?php
+                } else {
+                ?>
+                    <div class="alert alert-warning">Game Over</div>
+                <?php
+                }
+                ?>
             </div>
         </div>
 
@@ -229,29 +287,37 @@ $savedStatus = 0
 
 
     var gradeValueInput = document.getElementById('gradeValue');
-    var overallDpadGrade = parseFloat(gradeValueInput.value);
-    var counterElement = document.getElementById('counter')
+    var gradeValue2Input = document.getElementById('gradeValue2');
 
-    function updateCounter(value) {
-        counterElement.textContent = value.toFixed(1);
+    var overallDpadGrade = parseFloat(gradeValueInput.value);
+    var completeRate = parseFloat(gradeValue2Input.value);
+
+    var counterElement = document.getElementById('counter');
+    var counterElement2 = document.getElementById('counter2');
+
+    function updateCounter(element, value) {
+        element.textContent = value.toFixed(1);
     }
 
-    function loadCounter() {
+    function loadCounter(element, targetValue) {
         let currentCounterValue = 0.0;
         const interval = 25; // Adjust the interval as needed
-        const step = overallDpadGrade / (1000 / interval);
+        const step = targetValue / (1000 / interval);
 
         const counterInterval = setInterval(function() {
             currentCounterValue += step;
-            updateCounter(currentCounterValue);
+            updateCounter(element, currentCounterValue);
 
-            if (currentCounterValue >= overallDpadGrade) {
+            if (currentCounterValue >= targetValue) {
                 clearInterval(counterInterval);
-                updateCounter(overallDpadGrade);
+                updateCounter(element, targetValue);
             }
         }, interval);
     }
 
-    // Call the function to start loading the counter
-    loadCounter();
+    // Call the function to start loading the counter for counterElement
+    loadCounter(counterElement, overallDpadGrade);
+
+    // Call the function to start loading the counter for counterElement2
+    loadCounter(counterElement2, completeRate);
 </script>

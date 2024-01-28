@@ -33,9 +33,10 @@ if ($sourceType == "racks") {
         foreach ($selectedList as $selectedArray) {
 
             $dataValue = $selectedArray['name'];
+            $dataId = $selectedArray['id'];
     ?>
             <div class="col-md-4">
-                <div class="card clickable shadow-sm border-0" onclick="SetDataValue('<?= $sourceType ?>', '<?= $dataValue ?>')">
+                <div class="card clickable shadow-sm border-0" onclick="SetDataValue('<?= $sourceType ?>', '<?= $dataValue ?>', '<?= $dataId ?>')">
                     <div class="card-body">
                         <h6 class="mb-0 fw-bold"><?= $dataValue ?></h6>
                     </div>

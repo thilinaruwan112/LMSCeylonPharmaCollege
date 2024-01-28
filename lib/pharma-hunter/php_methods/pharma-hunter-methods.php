@@ -5,27 +5,90 @@ include __DIR__ . '../../../../include/configuration.php'; // Database Configura
 // Enable MySQLi error reporting
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-function GetSource($sourceType)
+
+
+function getCurrentTimeOfDay()
 {
+    date_default_timezone_set("Asia/Colombo");
+    $currentTime = date('H:i'); // Get the current time in the format 'HH:MM'
+    $morningStart = '06:00';
+    $afternoonStart = '12:00';
+    $eveningStart = '17:00';
+    $nightStart = '20:00';
 
-    if ($sourceType == "racks") {
-        $sql = "SELECT `id`, `name`, `is_active`, `created_by`, `created_at` FROM `hp_racks`";
-    } else if ($sourceType == 'dosageForm') {
-        $sql = "SELECT `id`, `name`, `is_active`, `created_by`, `created_at` FROM `hp_dosage_forms`";
-    } else if ($sourceType == 'drugCategory') {
-        $sql = "SELECT `id`, `name`, `is_active`, `created_by`, `created_at` FROM `hp_categories`";
-    } else if ($sourceType == 'drugGroup') {
-        $sql = "SELECT `id`, `name`, `is_active`, `created_by`, `created_at` FROM `hp_drug_types`";
+    if ($currentTime >= $morningStart && $currentTime < $afternoonStart) {
+        return 'Morning';
+    } elseif ($currentTime >= $afternoonStart && $currentTime < $eveningStart) {
+        return 'Afternoon';
+    } elseif ($currentTime >= $eveningStart && $currentTime < $nightStart) {
+        return 'Evening';
+    } else {
+        return 'Night';
     }
-    global $link;
-    $ArrayResult = array();
+}
 
+
+function GetSubmissions($link, $CountAnswer, $UserName)
+{
+    $ArrayResult = array();
+    $sql = "SELECT `medicine_id` FROM `hunter_saveanswer` WHERE `index_number` LIKE '$UserName' GROUP BY `index_number`, `medicine_id` HAVING COUNT(*) > $CountAnswer ORDER BY COUNT(*) DESC";
     $result = $link->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $ArrayResult[$row['id']] = $row;
+            $ArrayResult[] = $row["medicine_id"];
         }
     }
+    return $ArrayResult;;
+}
 
+function GetMedicines($link)
+{
+    $ArrayResult = array();
+    $sql = "SELECT `id`, `category_id`, `product_code`, `medicine_name`, `file_path`, `active_status`, `created_at`, `created_by` FROM `hunter_medicine` WHERE `active_status` LIKE 'Active'";
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult[$row['id']] = $row["id"];
+        }
+    }
+    return $ArrayResult;
+}
+
+function GetMedicineByID($link, $medicineId)
+{
+    $ArrayResult = array();
+    $sql = "SELECT `id`, `category_id`, `product_code`, `medicine_name`, `file_path`, `active_status`, `created_at`, `created_by` FROM `hunter_medicine` WHERE `id` LIKE '$medicineId'";
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult[] = $row;
+        }
+    }
+    return $ArrayResult;
+}
+
+function GetHunterCourseMedicines($link, $CourseCode)
+{
+    $ArrayResult = array();
+    $sql = "SELECT `id`, `CourseCode`, `MediID`, `status` FROM `hunter_course` WHERE `status` LIKE 'Active' AND `CourseCode` LIKE '$CourseCode'";
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult[$row['MediID']] = $row["MediID"];
+        }
+    }
+    return $ArrayResult;
+}
+
+function GetHunterProAttempts($link)
+{
+    $ArrayResult = 0;
+    $sql = "SELECT `id`, `setting`, `value` FROM `settings` WHERE `setting` LIKE 'HunterProAttempt'";
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult = $row["value"];
+        }
+    }
     return $ArrayResult;
 }
