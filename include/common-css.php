@@ -19,3 +19,4 @@
 
 <script src="./node_modules/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 <link href='./vendor/select2/dist/css/select2.min.css' rel='stylesheet'>
+<!-- Bootstrap Form Wizard CSS -->

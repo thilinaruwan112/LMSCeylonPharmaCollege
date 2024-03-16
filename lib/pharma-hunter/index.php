@@ -43,6 +43,7 @@ if (isset($_POST['MedicineID'])) {
 
 
 
+$savedStatus = 0;
 $AttemptCount = 5;
 $Score = 60;
 $MedicineCount = count($Medicines);
@@ -60,6 +61,10 @@ $overallGrade = ($TotalScore > 0) ? ($Score / $TotalScore) * 100 : 0;
 $medicineId = $selectedArray['id'];
 $medicineName = $selectedArray['medicine_name'];
 $filePath = $selectedArray['file_path'];
+
+// Special for Pharma Hunter
+$parts = explode("/", $filePath);
+$filePath = end($parts);
 ?>
 
 <style>
@@ -227,14 +232,7 @@ $filePath = $selectedArray['file_path'];
                                                 <input type="hidden" id="drugGroupId" name="drugGroupId">
                                             </div>
 
-                                            <div class="col-md-6">
-                                                <p class="mb-0 text-secondary">Select Category</p>
-                                                <input onclick="fillDataValue('drugCategory')" required readonly type="text" name="drugCategory" id="drugCategory" class="w-100 btn btn-light p-3" value="">
-                                                <input type="hidden" id="drugCategoryId" name="drugCategoryId">
-                                            </div>
-
                                             <div class="col-12">
-
                                                 <div class="row g-2 g-md-4">
                                                     <div class="col-md-6">
                                                         <button onclick="OpenIndex()" type="button" class="btn btn-success w-100 bgn-lg p-3"><i class="fa-solid fa-forward"></i> Skip</button>

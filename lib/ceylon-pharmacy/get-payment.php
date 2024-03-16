@@ -69,7 +69,7 @@ if ($UserLevel != "Student") {
                 <div class="row">
                     <div class="col-4 offset-4">
                         <p class="text-center text-secondary border-bottom pb-2">POS Provider</p>
-                        <a href="https://pos.payshia.com/" target="_blank"><img src="./lib/ceylon-pharmacy/assets/images/payshia-logo.png" class="w-100 clickable"></a>
+                        <a href="https://pos.payshia.com/login?guestMode=1" target="_blank"><img src="./lib/ceylon-pharmacy/assets/images/payshia-logo.png" class="w-100 clickable"></a>
                     </div>
                 </div>
                 <hr>

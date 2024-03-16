@@ -65,7 +65,7 @@ function getStudentPaymentDetails($userName)
     $ArrayResult = array();
 
     $studentId = GetLmsStudentsByUserName($userName)['student_id'];
-    $sql = "SELECT `receipt_number`, `payment_status`, `paid_amount`, `discount_amount` FROM `student_payment` WHERE `student_id` LIKE '$studentId'";
+    $sql = "SELECT * FROM `student_payment` WHERE `student_id` LIKE '$studentId'";
 
     $result = $link->query($sql);
     if ($result->num_rows > 0) {

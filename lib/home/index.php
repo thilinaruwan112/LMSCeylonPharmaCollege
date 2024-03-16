@@ -1,8 +1,13 @@
 <?php
+
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 require_once '../../include/configuration.php';
 include '../../php_handler/function_handler.php';
 include '../../php_handler/course_functions.php';
 include '../../php_handler/win-pharma-functions.php';
+include '../../php_handler/old-hunter.php';
 include '../../lib/quiz/php_method/quiz_methods.php';
 include '../../lib/d-pad/php_methods/d-pad-methods.php';
 
@@ -254,7 +259,7 @@ if ($courseCode != null) {
                     </div>
 
                     <div class="col-12 mt-2">
-                        <p class="m-0"><?= $ProgressValue ?>%</p>
+                        <p class="m-0"><?= $RecoveredPatientsCount ?> out of <?= $CoursePatientsCount ?></p>
                         <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?= $ProgressValue ?>" aria-valuemin="0" aria-valuemax="100">
                             <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= $ProgressValue ?>%</div>
                         </div>
@@ -273,11 +278,41 @@ if ($courseCode != null) {
                         <h4 class="card-title">Pharma Hunter</h4>
                     </div>
 
+                    <?php
+                    // Pharma Hunter
+                    $attemptPerMedicine = 10;
+                    $hunterMedicines = HunterMedicines();
+                    $medicineCount = count($hunterMedicines);
+                    $savedCounts = HunterSavedAnswersByUser($loggedUser);
+
+                    // echo $medicineCount;
+
+                    $correctCount = $pendingCount = $wrongCount = $gemCount = $coinCount = 0;
+                    $pendingCount = $medicineCount * $attemptPerMedicine;
+                    if (isset($savedCounts[$loggedUser])) {
+                        $correctCount = $savedCounts[$loggedUser]['correct_count'];
+                        $pendingCount = $medicineCount * $attemptPerMedicine - $correctCount;
+                        $wrongCount = $savedCounts[$loggedUser]['incorrect_count'];
+                        $gemCount = $savedCounts[$loggedUser]['gem_count'];
+                        $coinCount =  $savedCounts[$loggedUser]['coin_count'];
+
+                        if ($coinCount >= 50) {
+                            $gemCount = $gemCount + intval($coinCount / 50);
+                            $coinCount = $coinCount % 50;
+                        }
+                    }
+
+                    $ProgressValue = ($correctCount / ($medicineCount * $attemptPerMedicine)) * 100;
+                    if ($ProgressValue > 100) {
+                        $ProgressValue = 100;
+                    }
+
+                    ?>
+
                     <div class="col-12 mt-2">
-                        <?php $ProgressValue = 0; ?>
-                        <p class="m-0"><?= $ProgressValue ?>%</p>
+                        <p class="m-0">Gem - <?= $gemCount ?> | Coin - <?= $coinCount ?></p>
                         <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="<?= $ProgressValue ?>" aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= $ProgressValue ?>%</div>
+                            <div class="progress-bar" style="width: <?= $ProgressValue ?>%"><?= number_format($ProgressValue, 2) ?>%</div>
                         </div>
                     </div>
                 </div>
@@ -288,7 +323,7 @@ if ($courseCode != null) {
 
 
     <div class="col-6 col-md-4 mb-2 d-flex">
-        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('https://lms.pharmacollege.lk/modules/pharma-reader/')">
+        <div class="card game-card shadow-sm flex-fill" onclick="redirectToURL('pharma-reader')">
             <div class="card-body text-center">
                 <div class="row">
                     <div class="col-12">
@@ -317,7 +352,7 @@ if ($courseCode != null) {
     </div>
 
     <div class="col-12 col-md-4 mb-2 d-flex">
-        <div class="card other-card shadow-sm flex-fill">
+        <div class="card other-card shadow-sm flex-fill" onclick="redirectToURL('profile')">
             <div class="card-body">
                 <div class="row">
                     <div class="col-2 text-center d-flex align-items-center justify-content-center">

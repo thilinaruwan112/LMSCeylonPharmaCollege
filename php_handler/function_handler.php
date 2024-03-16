@@ -624,7 +624,7 @@ function GetCompanyDetails($link)
 function GetUserDetails($link, $UserName)
 {
     $ArrayResult = array();
-    $sql = "SELECT `id`, `student_id`, `username`, `civil_status`, `first_name`, `last_name`, `gender`, `address_line_1`, `address_line_2`, `city`, `postal_code`, `telephone_1`, `telephone_2`, `nic`, `e_mail`, `birth_day`, `updated_by`, `updated_at` FROM `user_full_details` WHERE `username` LIKE '$UserName'";
+    $sql = "SELECT * FROM `user_full_details` WHERE `username` LIKE '$UserName'";
     $result = $link->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -1093,4 +1093,61 @@ function saveOrUpdateAnswerDPad($link, $presID, $coverID, $name, $drugName, $dru
 
     // Convert the array to JSON and echo it
     return json_encode($ArrayResult);
+}
+
+
+
+function GetCities($link)
+{
+
+    $ArrayResult = array();
+    $sql = "SELECT `id`, `district_id`, `name_en`, `name_si`, `name_ta`, `sub_name_en`, `sub_name_si`, `sub_name_ta`, `postcode`, `latitude`, `longitude` FROM `cities` ORDER BY `name_en`";
+
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult[$row['id']] = $row;
+        }
+    }
+    return $ArrayResult;
+}
+
+function getDistricts($link)
+{
+    $sql = "SELECT `id`, `province_id`, `name_en`, `name_si`, `name_ta` FROM `districts`";
+    $ArrayResult = array();
+    $result = $link->query($sql);
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $ArrayResult[$row['id']] = $row;
+        }
+    }
+    return $ArrayResult;
+}
+
+function saveProfileEditRequest($username, $civil_status, $first_name, $last_name, $gender, $address_line_1, $address_line_2, $city, $district, $postal_code, $telephone_1, $telephone_2, $nic, $e_mail, $birth_day, $full_name, $name_with_initials, $name_on_certificate)
+{
+    global $link;
+    $error = "";
+    $CurrentTime = date("Y-m-d H:i:s");
+
+    $sql = "INSERT INTO `edit_profile_temp`(`username`, `civil_status`, `first_name`, `last_name`, `gender`, `address_line_1`, `address_line_2`, `city`, `district`, `postal_code`, `telephone_1`, `telephone_2`, `nic`, `e_mail`, `birth_day`, `full_name`, `name_with_initials`, `name_on_certificate` ) VALUES  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    if ($stmt_sql = mysqli_prepare($link, $sql)) {
+        // Bind variables to the prepared statement as parameters
+        mysqli_stmt_bind_param($stmt_sql, "ssssssssssssssssss", $username, $civil_status, $first_name, $last_name, $gender, $address_line_1, $address_line_2, $city, $district, $postal_code, $telephone_1, $telephone_2, $nic, $e_mail, $birth_day, $full_name, $name_with_initials, $name_on_certificate);
+
+        // Attempt to execute the prepared statement
+        if (mysqli_stmt_execute($stmt_sql)) {
+            $error = array('status' => 'success', 'message' => 'Profile edit request saved successfully');
+        } else {
+            $error = array('status' => 'error', 'message' => 'Something went wrong. Please try again later. ' . mysqli_error($link));
+        }
+
+        // Close statement
+        mysqli_stmt_close($stmt_sql);
+    } else {
+        $error = array('status' => 'error', 'message' => 'Something went wrong. Please try again later. ' . mysqli_error($link));
+    }
+
+    return $error;
 }
